@@ -40,13 +40,16 @@ fn system(mut gizmos: Gizmos, time: Res<Time>) {
         origin: center_radius * ray_direction,
         direction: ray_direction,
     };
-    // todo: start ray from edge of circle
+
     gizmos.ray_2d(
         center_radius * ray_direction,
         ray_direction * 80.,
         Color::GREEN,
     );
 
+    // only send out 10 rays max
+    // if it takes more than 10 rays to hit something, then we're out
+    // of luck
     let MAX_STEPS = 10;
     let mut dist = 0.0;
     for i in 0..MAX_STEPS {
@@ -65,6 +68,8 @@ fn system(mut gizmos: Gizmos, time: Res<Time>) {
             },
         );
 
+        // if we're close to anything, consider the ray to have
+        // "hit" it and stop iterating.
         if dist_to_sdf < 0.1 {
             break;
         }
@@ -78,7 +83,8 @@ fn system(mut gizmos: Gizmos, time: Res<Time>) {
         );
         dist = dist + dist_to_sdf;
 
-        // if we've passed the scene, stop
+        // if we've passed the scene, stop iterating. Don't want the ray
+        // going off forever into the distance
         if dist > 350. {
             break;
         }
@@ -109,6 +115,7 @@ fn scene(point: Vec2, gizmos: &mut Gizmos) -> f32 {
     let circle_three = sd_circle(point, position, radius);
     gizmos.circle_2d(position, radius, Color::WHITE);
 
+    // .min for each circle means we get the closest circle distance
     circle_one.min(circle_two).min(circle_three)
 }
 struct Ray {
@@ -127,5 +134,7 @@ fn sd_circle(
     center: Vec2,
     radius: f32,
 ) -> f32 {
+    // point - center is so that we can "relocate" a circle
+    // because otherwise it would only exist at world origin: 0,0
     (point - center).length() - radius
 }
