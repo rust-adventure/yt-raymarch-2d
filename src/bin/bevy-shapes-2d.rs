@@ -1,4 +1,6 @@
-//! This example demonstrates Bevy's immediate mode drawing API intended for visual debugging.
+//! This example demonstrates Bevy's immediate
+//! mode drawing API intended for visual
+//! debugging.
 
 use std::f32::consts::PI;
 
@@ -361,7 +363,8 @@ fn system(
         let current_pos = ray.at(dist);
 
         // query
-        // let dist_to_sdf = scene(current_pos, &mut gizmos);
+        // let dist_to_sdf = scene(current_pos, &mut
+        // gizmos);
         let dist_to_sdf = scene
             .iter()
             .map(|(sdf, transform)| {

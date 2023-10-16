@@ -1,4 +1,6 @@
-//! This example demonstrates Bevy's immediate mode drawing API intended for visual debugging.
+//! This example demonstrates Bevy's immediate
+//! mode drawing API intended for visual
+//! debugging.
 
 use std::f32::consts::{FRAC_2_PI, PI, TAU};
 
@@ -359,7 +361,8 @@ fn system(
     );
 
     let num_rays = 8;
-    // let angle = (time.elapsed_seconds() * 0.25).sin() * PI;
+    // let angle = (time.elapsed_seconds() *
+    // 0.25).sin() * PI;
     let angle_increment = TAU / num_rays as f32;
     for angle_i in 0..num_rays {
         let ray_direction = Vec2::from_angle(
@@ -385,7 +388,8 @@ fn system(
             let current_pos = ray.at(dist);
 
             // query
-            // let dist_to_sdf = scene(current_pos, &mut gizmos);
+            // let dist_to_sdf = scene(current_pos, &mut
+            // gizmos);
             let dist_to_sdf = scene
                 .iter()
                 .map(|(sdf, transform)| {

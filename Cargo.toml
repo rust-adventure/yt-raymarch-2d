@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 bevy = "0.11.2"
+web-sys = { version = "0.3.64", features = ["Window", "Location"] }

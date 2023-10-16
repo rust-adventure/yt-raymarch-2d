@@ -1,10 +1,5 @@
-//! This example demonstrates Bevy's immediate
-//! mode drawing API intended for visual
-//! debugging.
-
-use std::f32::consts::PI;
-
 use bevy::prelude::*;
+use std::f32::consts::FRAC_PI_4;
 
 fn main() {
     App::new()
@@ -22,29 +17,21 @@ fn setup(mut commands: Commands) {
 }
 
 fn system(mut gizmos: Gizmos, time: Res<Time>) {
-    let center_radius = 10.;
-    // The circles have 32 line-segments by default.
-    gizmos.circle_2d(
-        Vec2::splat(0.),
-        center_radius,
-        Color::BLACK,
-    );
-
-    let angle = (time.elapsed_seconds() * 0.25).sin() * PI;
-    let ray_direction = Vec2::from_angle(angle);
+    let ray_direction = Vec2::from_angle(FRAC_PI_4 - 0.3);
 
     let ray = Ray {
-        origin: center_radius * ray_direction,
+        origin: Vec2::splat(0.),
         direction: ray_direction,
     };
 
-    // gizmos.ray_2d(ray.origin, ray.at(80.),
-    // Color::GREEN);
+    gizmos.ray_2d(ray.origin, ray.at(800.), Color::GREEN);
 
     // only send out 10 rays max
     // if it takes more than 10 rays to hit something,
     // then we're out of luck
-    let MAX_STEPS = 10;
+
+    let MAX_STEPS =
+        (time.elapsed_seconds() % 10.).floor() as i32;
     let mut dist = 0.0;
     for i in 0..MAX_STEPS {
         let current_pos = ray.at(dist);
@@ -54,10 +41,10 @@ fn system(mut gizmos: Gizmos, time: Res<Time>) {
         gizmos.ray_2d(
             current_pos,
             ray_direction * dist_to_sdf,
-            if i % 2 == 0 {
+            if i == MAX_STEPS - 1 {
                 Color::BLUE
             } else {
-                Color::GREEN
+                Color::NONE
             },
         );
 
@@ -72,10 +59,10 @@ fn system(mut gizmos: Gizmos, time: Res<Time>) {
         gizmos.circle_2d(
             current_pos,
             dist_to_sdf,
-            if i % 2 == 0 {
+            if i == MAX_STEPS - 1 {
                 Color::BLUE
             } else {
-                Color::GREEN
+                Color::NONE
             },
         );
         dist = dist + dist_to_sdf;
@@ -83,39 +70,26 @@ fn system(mut gizmos: Gizmos, time: Res<Time>) {
         // if we've passed the scene, stop iterating.
         // Don't want the ray going off forever
         // into the distance
-        if dist > 350. {
+        if dist > 600. {
             break;
         }
     }
+    // hack to render gizmos for sdf shapes
+    scene(Vec2::new(0., 0.), &mut gizmos);
 }
 
 fn scene(point: Vec2, gizmos: &mut Gizmos) -> f32 {
-    // circle 1
-    let position = 40.;
-    let radius = 10.;
-    let circle_one =
-        sd_circle(point, Vec2::splat(position), radius);
-    gizmos.circle_2d(
-        Vec2::splat(position),
-        radius,
+    let position = Vec2::new(30., 100.);
+    let radius = 100.;
+    let rect =
+        sd_rect(point, position, Vec2::splat(radius));
+    gizmos.rect_2d(
+        position,
+        0.,
+        Vec2::splat(radius),
         Color::WHITE,
     );
-
-    // circle 2
-    let position = Vec2::new(200., 50.);
-    let radius = 20.;
-    let circle_two = sd_circle(point, position, radius);
-    gizmos.circle_2d(position, radius, Color::WHITE);
-
-    // circle 3
-    let position = Vec2::new(-50., 300.);
-    let radius = 10.;
-    let circle_three = sd_circle(point, position, radius);
-    gizmos.circle_2d(position, radius, Color::WHITE);
-
-    // .min for each circle means we get the closest
-    // circle distance
-    circle_one.min(circle_two).min(circle_three)
+    rect
 }
 struct Ray {
     origin: Vec2,
@@ -128,13 +102,8 @@ impl Ray {
     }
 }
 
-fn sd_circle(
-    point: Vec2,
-    center: Vec2,
-    radius: f32,
-) -> f32 {
-    // point - center is so that we can "relocate" a
-    // circle because otherwise it would only
-    // exist at world origin: 0,0
-    (point - center).length() - radius
+fn sd_rect(point: Vec2, center: Vec2, size: Vec2) -> f32 {
+    let recentered_point = point - center;
+    let d = recentered_point.abs() - (size / 2.0);
+    d.max(Vec2::splat(0.0)).length() + d.x.max(d.y).min(0.0)
 }
