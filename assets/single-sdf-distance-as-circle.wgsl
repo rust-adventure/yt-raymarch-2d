@@ -3,7 +3,8 @@
 
 struct SdfDemoMaterial {
     color: vec4<f32>,
-    mouse: vec2<f32>
+    mouse: vec2<f32>,
+    lights: f32
 };
 
 @group(1) @binding(0)
@@ -44,7 +45,7 @@ fn fragment(
 // return vec4(abs(mouse_dist_to_scene), 0.0, 0.0,1.0);
 
 if frag_dist_to_scene < 0. {
-    return vec4(1.0);
+    return vec4(material.lights,material.lights,material.lights,1.0);
 }
 if circle < 0.005 && circle > -0.005 {
     return vec4(0.,1.,0., 1.0);

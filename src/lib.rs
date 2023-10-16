@@ -1,10 +1,13 @@
 use std::ops::Deref;
 
-use bevy::prelude::*;
+use bevy::{prelude::*, utils::HashMap};
 mod apps;
 pub mod bevy_plugin_shader2d;
 
-pub fn examples(example: String) {
+pub fn examples(
+    example: String,
+    params: HashMap<String, String>,
+) {
     match example.deref() {
         "single-sdf-distance-as-gradient" => {
             apps::single_sdf_distance_as_gradient::app();
@@ -22,7 +25,15 @@ pub fn examples(example: String) {
             apps::single_sdf_distance_as_gradient_with_algorithm::app();
 }
         "single-sdf-distance-as-circle" => {
-            apps::single_sdf_distance_as_circle::app();
+use            apps::single_sdf_distance_as_circle::Lights;
+let lights = match           params.get("lights").cloned().unwrap_or("on".to_string()).deref(){
+
+        "on" => Lights::On,
+        "off" => Lights::Off,
+        _ => Lights::On
+    }
+;
+            apps::single_sdf_distance_as_circle::app(lights);
 }
         "single-sdf-distance-as-border" => {
             apps::single_sdf_distance_as_border::app();

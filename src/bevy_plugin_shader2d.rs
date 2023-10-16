@@ -6,9 +6,10 @@ use bevy::{
         Material2d, Material2dPlugin, MaterialMesh2dBundle,
         Mesh2dHandle,
     },
+    window::WindowResolution,
 };
 use core::hash::Hash;
-use std::time::Duration;
+use std::{f32::INFINITY, time::Duration};
 
 pub struct Shader2dWindowPlugin<S: Material2d> {
     pub shader: S,
@@ -41,6 +42,17 @@ where
                 .set(WindowPlugin {
                     primary_window: Some(Window {
                         // title: todo!(),
+                        resolution: WindowResolution::new(
+                            300., 168.75,
+                        ),
+                        resize_constraints:
+                            WindowResizeConstraints {
+                                min_width: 300.,
+                                min_height: 300.,
+                                max_width: INFINITY,
+                                max_height: INFINITY,
+                            },
+                        resizable: true,
                         fit_canvas_to_parent: true,
                         ..default()
                     }),

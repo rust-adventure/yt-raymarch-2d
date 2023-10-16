@@ -23,5 +23,5 @@ fn main() {
         panic!("no example!");
     };
     println!("example is: {example}");
-    yt_raymarch_2d::examples(example.clone())
+    yt_raymarch_2d::examples(example.clone(), query)
 }

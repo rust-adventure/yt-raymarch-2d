@@ -6,12 +6,20 @@ use bevy::{
     sprite::Material2d,
 };
 
-pub fn app() {
+pub enum Lights {
+    On,
+    Off,
+}
+pub fn app(lights: Lights) {
     App::new()
         .add_plugins((Shader2dWindowPlugin {
             shader: SdfDemoMaterial {
                 color: Color::BLUE,
                 mouse: Vec2::splat(0.),
+                lights: match lights {
+                    Lights::On => 1.,
+                    Lights::Off => 0.,
+                },
             },
         },))
         .add_systems(Update, (update_mouse,))
@@ -50,4 +58,6 @@ pub struct SdfDemoMaterial {
     color: Color,
     #[uniform(0)]
     mouse: Vec2,
+    #[uniform(0)]
+    lights: f32,
 }
